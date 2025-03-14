@@ -30,10 +30,13 @@ from ebaysdk.exception import ConnectionError
 
 import re
 import requests
-
-
-
 import win32com.client
+
+import logging
+
+# Cấu hình logging
+logging.basicConfig(filename='app.log', level=logging.DEBUG)
+
 xl = win32com.client.GetObject(Class="Excel.Application")
 #driver.quit()
 
@@ -178,12 +181,12 @@ def get_det_1(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -286,12 +289,12 @@ def get_det_3(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -397,12 +400,12 @@ def get_det_5(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -506,12 +509,12 @@ def get_det_7(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -624,12 +627,12 @@ def get_det_9(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -739,12 +742,12 @@ def get_det_11(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -893,12 +896,12 @@ def get_det_15(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -1014,12 +1017,12 @@ def get_det_21(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -1137,12 +1140,12 @@ def get_det_22(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -1266,12 +1269,12 @@ def get_det_23(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -1386,12 +1389,12 @@ def get_det_24(prd_url,r_nm):
 
     if tr_sh.Cells(r_nm,3).Value is not None:
         if sel_not=="in stock":
-            if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
-                    tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
-                except:
-                    pass
+            # if abs(float(tr_sh.Cells(r_nm,9).Value)-float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm,3).Value),int(tr_sh.Cells(r_nm,16).Value))###価格変更
+            #         tr_sh.Cells(r_nm,9).Value=NgrYD###価格変更時為替レート記入
+            #     except:
+            #         pass
                 
             if tr_sh.Cells(r_nm,11).Value is not None:###販売停止中（timestumpが存在）であれば,販売停止timestumpを削除して在庫を１に
                 
@@ -1516,12 +1519,12 @@ def get_det_25 (prd_url,r_nm):
 
     if tr_sh.Cells(r_nm, 3).Value is not None:
         if sel_not == "in stock":
-            if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
-                try:
-                    ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
-                    tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
-                except Exception as e:
-                    print(f"Error while changing price: {e}")
+            # if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
+            #         tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
+            #     except Exception as e:
+            #         print(f"Error while changing price: {e}")
 
             if tr_sh.Cells(r_nm, 11).Value is not None:  # 販売停止中（timestumpが存在）
                 try:
@@ -1644,12 +1647,268 @@ def get_det_26 (prd_url,r_nm):
 
     if tr_sh.Cells(r_nm, 3).Value is not None:
         if sel_not == "in stock":
-            if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
+            # if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
+            #         tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
+            #     except Exception as e:
+            #         print(f"Error while changing price: {e}")
+
+            if tr_sh.Cells(r_nm, 11).Value is not None:  # 販売停止中（timestumpが存在）
                 try:
-                    ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
-                    tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
+                    ChngQuantity(tr_sh.Cells(r_nm, 3).Value, 1)
+                    tr_sh.Cells(r_nm, 11).Value = ""
                 except Exception as e:
-                    print(f"Error while changing price: {e}")
+                    print(f"Error while changing quantity: {e}")
+
+        elif sel_not == "out of stock":
+            z_range = 0
+            try:
+                z_range = time.time() - tr_sh.Cells(r_nm, 11).Value
+            except Exception as e:
+                print(f"Error while calculating time range: {e}")
+
+            if tr_sh.Cells(r_nm, 11).Value is not None and zkt < z_range:  # 販売停止中で（timestumpが存在して）タイマー経過していれば
+                try:
+                    DlePrdct(tr_sh.Cells(r_nm, 3).Value)
+                    tr_sh.Cells(r_nm, 3).Value = ""
+                    tr_sh.Cells(r_nm, 11).Value = ""
+                except Exception as e:
+                    print(f"Error while deleting product: {e}")
+
+            elif tr_sh.Cells(r_nm, 11).Value is None:
+                try:
+                    ChngQuantity(tr_sh.Cells(r_nm, 3).Value, 0)
+                    tr_sh.Cells(r_nm, 11).Value = time.time()
+                except Exception as e:
+                    print(f"Error while changing quantity to zero: {e}")
+
+#https://www.treasure-f.com/
+def get_det_27 (prd_url,r_nm):
+
+    print(f"Accessing URL: {prd_url}")  # In ra URL
+
+    global driver
+    global tr_sh
+    global tim_sh
+    global RateYD
+    global rangYD
+    global NgrYD
+    driver.get(prd_url)   
+
+    time.sleep(3)
+    p_id = ""
+    p_name = ""
+    sel_not = ""
+    p_det = ""
+    p_price = ""
+    pic_url = ""
+    tex_yn = ""  # Gán giá trị mặc định cho tex_yn
+
+    # Log tên sản phẩm
+    try:
+        p_name = driver.find_elements(By.CLASS_NAME,"title")[0].text
+    except Exception as e:
+        print(f"Error while fetching product name: {e}")
+    print(f"Product Name: {p_name}")  # Log tên sản phẩm
+
+    # Log trạng thái sản phẩm
+    try:
+        tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
+    except Exception as e:
+        print(f"Error while fetching stock status text: {e}")
+    print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
+
+    if "ショッピングカートに入れる" in tex_yn:
+        sel_not = "in stock"
+        print("Status: in stock")  # Log trạng thái "in stock"
+    else:
+        sel_not = "out of stock"
+        print("Status: out of stock")  # Log trạng thái "out of stock"
+        
+    # Log chi tiết sản phẩm
+    try:
+        elm_det = driver.find_elements(By.CLASS_NAME,"p-table__content")[0].find_elements(By.TAG_NAME,"tr")
+        for n in range(len(elm_det)):
+            try:
+                p_det = p_det + elm_det[n].find_elements(By.TAG_NAME,"th")[0].text + " : " + elm_det[n].find_elements(By.TAG_NAME,"td")[0].text + "<br>"
+            except:
+                pass
+    except Exception as e:
+        print(f"Error while fetching product details: {e}")
+    print(f"Product Details: {p_det}")  # Log chi tiết sản phẩm
+        
+    # Log giá sản phẩm
+    try:
+        p_price = driver.find_elements(By.CLASS_NAME,"js-enhanced-ecommerce-goods-price")[0].text
+        p_price = p_price.replace(',', '')
+        p_price = p_price.replace('￥', '')
+        p_price = p_price.replace('(税込)', '')
+        p_price = p_price.replace('円', '')
+        p_price = int(p_price)
+    except Exception as e:
+        print(f"Error while fetching product price: {e}")
+    print(f"Product Price: {p_price}")  # Log giá sản phẩm
+
+    # Log hình ảnh sản phẩm
+    try:
+        elm_pic = driver.find_elements(By.CLASS_NAME,"ql-editor")[0].find_elements(By.TAG_NAME,"img")
+        pic_url = ""
+        for m in range(len(elm_pic)):
+            pic_url = pic_url + elm_pic[m].get_attribute("src") + "|"
+    except Exception as e:
+        print(f"Error while fetching product images: {e}")
+    print(f"Product Images: {pic_url}")  # Log đường dẫn hình ảnh sản phẩm
+
+    if p_name == "":
+        sel_not = "out of stock"
+
+    if p_name != "":
+        tr_sh.Cells(r_nm, 4).Value = p_name
+    tr_sh.Cells(r_nm, 5).Value = sel_not
+    if p_det != "":
+        tr_sh.Cells(r_nm, 6).Value = p_det
+    if p_price != "":
+        tr_sh.Cells(r_nm, 7).Value = p_price
+    if pic_url != "":
+        tr_sh.Cells(r_nm, 8).Value = pic_url
+
+    if tr_sh.Cells(r_nm, 3).Value is not None:
+        if sel_not == "in stock":
+            # if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
+            #         tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
+            #     except Exception as e:
+            #         print(f"Error while changing price: {e}")
+
+            if tr_sh.Cells(r_nm, 11).Value is not None:  # 販売停止中（timestumpが存在）
+                try:
+                    ChngQuantity(tr_sh.Cells(r_nm, 3).Value, 1)
+                    tr_sh.Cells(r_nm, 11).Value = ""
+                except Exception as e:
+                    print(f"Error while changing quantity: {e}")
+
+        elif sel_not == "out of stock":
+            z_range = 0
+            try:
+                z_range = time.time() - tr_sh.Cells(r_nm, 11).Value
+            except Exception as e:
+                print(f"Error while calculating time range: {e}")
+
+            if tr_sh.Cells(r_nm, 11).Value is not None and zkt < z_range:  # 販売停止中で（timestumpが存在して）タイマー経過していれば
+                try:
+                    DlePrdct(tr_sh.Cells(r_nm, 3).Value)
+                    tr_sh.Cells(r_nm, 3).Value = ""
+                    tr_sh.Cells(r_nm, 11).Value = ""
+                except Exception as e:
+                    print(f"Error while deleting product: {e}")
+
+            elif tr_sh.Cells(r_nm, 11).Value is None:
+                try:
+                    ChngQuantity(tr_sh.Cells(r_nm, 3).Value, 0)
+                    tr_sh.Cells(r_nm, 11).Value = time.time()
+                except Exception as e:
+                    print(f"Error while changing quantity to zero: {e}")
+
+#https://shop.the-ticken.com/
+def get_det_28 (prd_url,r_nm):
+
+    print(f"Accessing URL: {prd_url}")  # In ra URL
+
+    global driver
+    global tr_sh
+    global tim_sh
+    global RateYD
+    global rangYD
+    global NgrYD
+    driver.get(prd_url)   
+
+    time.sleep(3)
+    p_id = ""
+    p_name = ""
+    sel_not = ""
+    p_det = ""
+    p_price = ""
+    pic_url = ""
+    tex_yn = ""  # Gán giá trị mặc định cho tex_yn
+
+    # Log tên sản phẩm
+    try:
+        p_name = driver.find_elements(By.CLASS_NAME,"title")[0].text
+    except Exception as e:
+        print(f"Error while fetching product name: {e}")
+    print(f"Product Name: {p_name}")  # Log tên sản phẩm
+
+    # Log trạng thái sản phẩm
+    try:
+        tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
+    except Exception as e:
+        print(f"Error while fetching stock status text: {e}")
+    print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
+
+    if "ショッピングカートに入れる" in tex_yn:
+        sel_not = "in stock"
+        print("Status: in stock")  # Log trạng thái "in stock"
+    else:
+        sel_not = "out of stock"
+        print("Status: out of stock")  # Log trạng thái "out of stock"
+        
+    # Log chi tiết sản phẩm
+    try:
+        elm_det = driver.find_elements(By.CLASS_NAME,"p-table__content")[0].find_elements(By.TAG_NAME,"tr")
+        for n in range(len(elm_det)):
+            try:
+                p_det = p_det + elm_det[n].find_elements(By.TAG_NAME,"th")[0].text + " : " + elm_det[n].find_elements(By.TAG_NAME,"td")[0].text + "<br>"
+            except:
+                pass
+    except Exception as e:
+        print(f"Error while fetching product details: {e}")
+    print(f"Product Details: {p_det}")  # Log chi tiết sản phẩm
+        
+    # Log giá sản phẩm
+    try:
+        p_price = driver.find_elements(By.CLASS_NAME,"js-enhanced-ecommerce-goods-price")[0].text
+        p_price = p_price.replace(',', '')
+        p_price = p_price.replace('￥', '')
+        p_price = p_price.replace('(税込)', '')
+        p_price = p_price.replace('円', '')
+        p_price = int(p_price)
+    except Exception as e:
+        print(f"Error while fetching product price: {e}")
+    print(f"Product Price: {p_price}")  # Log giá sản phẩm
+
+    # Log hình ảnh sản phẩm
+    try:
+        elm_pic = driver.find_elements(By.CLASS_NAME,"ql-editor")[0].find_elements(By.TAG_NAME,"img")
+        pic_url = ""
+        for m in range(len(elm_pic)):
+            pic_url = pic_url + elm_pic[m].get_attribute("src") + "|"
+    except Exception as e:
+        print(f"Error while fetching product images: {e}")
+    print(f"Product Images: {pic_url}")  # Log đường dẫn hình ảnh sản phẩm
+
+    if p_name == "":
+        sel_not = "out of stock"
+
+    if p_name != "":
+        tr_sh.Cells(r_nm, 4).Value = p_name
+    tr_sh.Cells(r_nm, 5).Value = sel_not
+    if p_det != "":
+        tr_sh.Cells(r_nm, 6).Value = p_det
+    if p_price != "":
+        tr_sh.Cells(r_nm, 7).Value = p_price
+    if pic_url != "":
+        tr_sh.Cells(r_nm, 8).Value = pic_url
+
+    if tr_sh.Cells(r_nm, 3).Value is not None:
+        if sel_not == "in stock":
+            # if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
+            #     try:
+            #         ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
+            #         tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
+            #     except Exception as e:
+            #         print(f"Error while changing price: {e}")
 
             if tr_sh.Cells(r_nm, 11).Value is not None:  # 販売停止中（timestumpが存在）
                 try:
@@ -1703,7 +1962,26 @@ def get_table_and_go():
     global tr_sh
 
 
+    # tr_sh= xl.Worksheets("the-ticken")###
+    # for i in range(10000):
+    #     #print(i)
+    #     if tr_sh.Cells(i+3,2).Value!=None:
+            
+    #         get_det_28(tr_sh.Cells(i+3,2).Value,i+3)
+    #     else:
+    #         break 
+
+    tr_sh= xl.Worksheets("treasure-f")###
+    for i in range(10000):
+        #print(i)
+        if tr_sh.Cells(i+3,2).Value!=None:
+            
+            get_det_27(tr_sh.Cells(i+3,2).Value,i+3)
+        else:
+            break 
+
     tr_sh= xl.Worksheets("rodeodrive")###
+    logging.info("vao check rodeodrive")
     for i in range(10000):
         #print(i)
         if tr_sh.Cells(i+3,2).Value!=None:
@@ -1840,6 +2118,7 @@ def clse():
     
 
 def get_table_main():
+    logging.info("Nhan nut khoi chay")
     tim_sh= xl.Worksheets("time_table")
     for k in range(10000):
         get_table_and_go()
