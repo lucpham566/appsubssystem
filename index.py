@@ -4,11 +4,20 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import SessionNotCreatedException, WebDriverException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import traceback
 
 
 options = webdriver.ChromeOptions()
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
+
+# Đảm bảo rằng chrome sẽ không tự động điều hướng
+options.add_argument("--disable-logging")
+options.add_argument("--log-level=3")  # Giảm mức độ log, giảm thông báo về chuyển hướng.
+
+
 import zipfile
 import urllib.request                            # ライブラリを取り込む
 import os
@@ -796,26 +805,66 @@ def get_det_15(prd_url,r_nm):
     p_det=""
     p_price=""
     pic_url=""    
+
+    # selector
+
+    title_sec = ".ProductTitle__title"
+    content_classname = "ProductExplanation__commentBody"
+    price_classname= "Price__value"
+    price_tax_classname = "Price__tax"
+    ProductImage__thumbnail=".ProductImage__thumbnail"
+    ProductImage__inner="ProductImage__inner"
+
+    # Kiểm tra URL hiện tại
+    current_url = driver.current_url
+    
+    # Kiểm tra xem URL có chứa 'page.auctions.yahoo.co.jp' hay không
+    if "page.auctions.yahoo.co.jp" in current_url:
+        print("Đang ở trên trang với 'page.auctions.yahoo.co.jp'")
+    elif "auctions.yahoo.co.jp" in current_url:
+        print("Đang ở trên trang với 'auctions.yahoo.co.jp'")
+        title_sec = "#itemTitle > div > div > h1"
+        content_classname = "jlYvNs"
+        price_classname= "fHKtMh"
+        price_tax_classname = "fHKtMh"
+        ProductImage__thumbnail="#imageGallery > div > div > div > div > div.sc-ce81b05b-8.jAVFTS.slick-dots > ul > li"
+        ProductImage__inner="#imageGallery > div > div > div > div > div.slick-list > div > div.slick-slide.slick-active.slick-current > div > div"
+    else:
+        print("Không phải là trang Yahoo Auctions hợp lệ!")
+
     try:
-        p_name=driver.find_elements(By.CLASS_NAME,"ProductTitle__text")[0].text###OK
+        p_name=driver.find_elements(By.CSS_SELECTOR,title_sec)[0].text###OK
     except:
         pass   
 
     try:
-        tex_yn=""
-        tex_yn=driver.find_elements(By.CLASS_NAME,"ClosedHeader__tag")[0].text
+        closed_header = driver.find_elements(By.CSS_SELECTOR, "#closedHeader")
+        if closed_header:
+            print("closed_header tồn tại")
+            sel_not = "out of stock"
+        else:
+            print("closed_header không tồn tại")
+            # Lấy văn bản (text) của phần tử
+            tex_yn=""
+            # tex_yn=driver.find_elements(By.CLASS_NAME,"gv-u-fontSize16--_aSkEz8L_OSLLKFaubKB")[0].text
+            element = driver.find_element(By.CSS_SELECTOR, title_sec)
+            # Lấy văn bản (text) của phần tử
+            tex_yn = element.text
+            print(f"Product status: {tex_yn}")  # In ra trạng thái của sản phẩm
+            if tex_yn == "0件":
+                sel_not = "in stock"
+            else:
+                sel_not = "out of stock"
+
     except:
         pass    
-    if "このオークションは終了" in tex_yn:
-        sel_not="out of stock"   
-    else:
-        sel_not="in stock"
+    
 
     try:
         if p_det=="":
             #document.getElementsByClassName("ProductExplanation__commentBody")
             #p_det=driver.find_elements(By.CLASS_NAME,"ProductExplanation__commentBody")[0].get_attribute('outerHTML')#OKKKKK
-            p_det=driver.find_elements(By.CLASS_NAME,"ProductExplanation__commentBody")[0].get_attribute('outerText')
+            p_det=driver.find_elements(By.CLASS_NAME, content_classname)[0].get_attribute('outerText')
             #p_det=driver.find_elements(By.CLASS_NAME,"ProductExplanation__commentBody")[0].find_elements(By.TAG_NAME,"div")[0].get_attribute('outerHTML')#A1
             #p_det=driver.find_elements(By.CLASS_NAME,"ProductExplanation__commentBody")[0].find_elements(By.TAG_NAME,"div")[0].get_attribute('outerText')
             
@@ -842,7 +891,7 @@ def get_det_15(prd_url,r_nm):
         pass
     
     try:
-        p_price=driver.find_elements(By.CLASS_NAME,"Price__value")[0].text
+        p_price=driver.find_elements(By.CLASS_NAME, price_classname)[0].text
     except:
         pass
     #document.getElementsByClassName("Price__tax")
@@ -858,12 +907,13 @@ def get_det_15(prd_url,r_nm):
         pass
     
     #document.getElementsByClassName("Price__tax")
-    if len(driver.find_elements(By.CLASS_NAME,"Price__tax"))!=0 and driver.find_elements(By.CLASS_NAME,"Price__tax")[0].text!="（税 0 円）":
+    if len(driver.find_elements(By.CLASS_NAME,price_tax_classname))!=0 and driver.find_elements(By.CLASS_NAME,price_tax_classname)[0].text!="（税 0 円）":
         try:
-            p_price=driver.find_elements(By.CLASS_NAME,"Price__tax")[0].text
+            p_price=driver.find_elements(By.CLASS_NAME,price_tax_classname)[0].text
             p_price=p_price.replace(',', '')
             p_price=p_price.replace('（税込 ', '')
             p_price=p_price.replace(' 円）', '')
+            p_price=p_price.replace('円', '')
             p_price=int(p_price)
             
         except:
@@ -873,11 +923,18 @@ def get_det_15(prd_url,r_nm):
     
     
     try:
-        elm_pic=driver.find_elements(By.CLASS_NAME,"ProductImage__thumbnail")
-        for m in range(len( elm_pic)):
-            pind_url=elm_pic[m].find_elements(By.TAG_NAME,"img")[0].get_attribute("src")
-            pind_url=pind_url[:pind_url.find('.jpg')+4]
-            pic_url=pic_url+ pind_url+"|"
+        elm_pic=driver.find_elements(By.CSS_SELECTOR, ProductImage__thumbnail)
+        # elm_pic = driver.find_elements(By.CSS_SELECTOR, ".slick-slide")
+        if not elm_pic:
+            elm_pic=driver.find_elements(By.CSS_SELECTOR, ProductImage__inner)
+        
+         # Tiến hành xử lý với các phần tử đã tìm thấy
+        for m in range(len(elm_pic)):
+            pind_url = elm_pic[m].find_elements(By.TAG_NAME, "img")[0].get_attribute("src")
+            pind_url = pind_url[:pind_url.find('.jpg') + 4]
+            pic_url = pic_url + pind_url + "|"
+           
+
     except:
         pass
 
@@ -1179,7 +1236,7 @@ def get_det_22(prd_url,r_nm):
                     pass
     
        
-
+#https://shop.the-ticken.com/
 def get_det_23(prd_url,r_nm):
     global driver
     global tr_sh
@@ -1458,12 +1515,12 @@ def get_det_25 (prd_url,r_nm):
 
     # Log trạng thái sản phẩm
     try:
-        tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
+        tex_yn = driver.find_elements(By.CSS_SELECTOR,"body > div.page_container.page_hd_red.page_container2 > div > div > div.item_detail.sale_detail > div.item_status > div.settlementsaleareabox.price_container > div.more_btn.cms_mincho-m.sale_btn_color.sale_btn")[0].text
     except Exception as e:
         print(f"Error while fetching stock status text: {e}")
     print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
 
-    if "ショッピングカートに入れる" in tex_yn:
+    if "購入･お問い合わせ" in tex_yn:
         sel_not = "in stock"
         print("Status: in stock")  # Log trạng thái "in stock"
     else:
@@ -1472,12 +1529,8 @@ def get_det_25 (prd_url,r_nm):
         
     # Log chi tiết sản phẩm
     try:
-        elm_det = driver.find_elements(By.CLASS_NAME,"p-table__content")[0].find_elements(By.TAG_NAME,"tr")
-        for n in range(len(elm_det)):
-            try:
-                p_det = p_det + elm_det[n].find_elements(By.TAG_NAME,"th")[0].text + " : " + elm_det[n].find_elements(By.TAG_NAME,"td")[0].text + "<br>"
-            except:
-                pass
+         #document.getElementsByClassName("product-order-exp")
+        p_det= driver.find_elements(By.CSS_SELECTOR,"body > div.page_container.page_hd_red.page_container2 > div > div > div.item_info_rep > div > div")[0].text
     except Exception as e:
         print(f"Error while fetching product details: {e}")
     print(f"Product Details: {p_det}")  # Log chi tiết sản phẩm
@@ -1503,6 +1556,14 @@ def get_det_25 (prd_url,r_nm):
     except Exception as e:
         print(f"Error while fetching product images: {e}")
     print(f"Product Images: {pic_url}")  # Log đường dẫn hình ảnh sản phẩm
+
+    try:
+        p_price=p_price.replace(',', '')
+        p_price=p_price.replace('¥', '')
+        p_price=p_price.replace('円', '')
+        p_price=int(p_price)
+    except:
+        pass
 
     if p_name == "":
         sel_not = "out of stock"
@@ -1586,12 +1647,12 @@ def get_det_26 (prd_url,r_nm):
 
     # Log trạng thái sản phẩm
     try:
-        tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
+        tex_yn = driver.find_elements(By.CSS_SELECTOR,"body > div.cmn-wrapper > div.cmn-container > div > div.goodsdetail > div.goodsdetail_goods > div.goodsdetail_goods_txtcol > form > div.goodsdetail_addcart > button > span")[0].text
     except Exception as e:
         print(f"Error while fetching stock status text: {e}")
     print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
 
-    if "ショッピングカートに入れる" in tex_yn:
+    if "Add to Cart" in tex_yn:
         sel_not = "in stock"
         print("Status: in stock")  # Log trạng thái "in stock"
     else:
@@ -1600,7 +1661,7 @@ def get_det_26 (prd_url,r_nm):
         
     # Log chi tiết sản phẩm
     try:
-        elm_det = driver.find_elements(By.CLASS_NAME,"p-table__content")[0].find_elements(By.TAG_NAME,"tr")
+        elm_det = driver.find_elements(By.CLASS_NAME,"goodsdetail_spec-table")[0].find_elements(By.TAG_NAME,"tr")
         for n in range(len(elm_det)):
             try:
                 p_det = p_det + elm_det[n].find_elements(By.TAG_NAME,"th")[0].text + " : " + elm_det[n].find_elements(By.TAG_NAME,"td")[0].text + "<br>"
@@ -1699,7 +1760,7 @@ def get_det_27 (prd_url,r_nm):
     time.sleep(3)
     p_id = ""
     p_name = ""
-    sel_not = ""
+    sel_not = "in stock"
     p_det = ""
     p_price = ""
     pic_url = ""
@@ -1713,49 +1774,53 @@ def get_det_27 (prd_url,r_nm):
     print(f"Product Name: {p_name}")  # Log tên sản phẩm
 
     # Log trạng thái sản phẩm
-    try:
-        tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
-    except Exception as e:
-        print(f"Error while fetching stock status text: {e}")
-    print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
+    # try:
+    #     tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
+    # except Exception as e:
+    #     print(f"Error while fetching stock status text: {e}")
+    # print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
 
-    if "ショッピングカートに入れる" in tex_yn:
-        sel_not = "in stock"
-        print("Status: in stock")  # Log trạng thái "in stock"
-    else:
-        sel_not = "out of stock"
-        print("Status: out of stock")  # Log trạng thái "out of stock"
+    # if "ショッピングカートに入れる" in tex_yn:
+    #     sel_not = "in stock"
+    #     print("Status: in stock")  # Log trạng thái "in stock"
+    # else:
+    #     sel_not = "out of stock"
+    #     print("Status: out of stock")  # Log trạng thái "out of stock"
         
     # Log chi tiết sản phẩm
     try:
-        elm_det = driver.find_elements(By.CLASS_NAME,"p-table__content")[0].find_elements(By.TAG_NAME,"tr")
-        for n in range(len(elm_det)):
-            try:
-                p_det = p_det + elm_det[n].find_elements(By.TAG_NAME,"th")[0].text + " : " + elm_det[n].find_elements(By.TAG_NAME,"td")[0].text + "<br>"
-            except:
-                pass
+        p_det= driver.find_elements(By.CSS_SELECTOR,"#blog_content .ql-editor")[0].text
+        # Sử dụng regex để tìm giá trị tiền tệ (số theo sau dấu "：")
+        price_match = re.search(r"店頭販売価格 ：([\d,]+)円", p_det)
+
+        if price_match:
+            p_price = price_match.group(1)  # Lấy giá trị tiền tệ
+            print(f"Price: {p_price} yen")
+        else:
+            print("Price not found")
+
     except Exception as e:
         print(f"Error while fetching product details: {e}")
     print(f"Product Details: {p_det}")  # Log chi tiết sản phẩm
         
-    # Log giá sản phẩm
-    try:
-        p_price = driver.find_elements(By.CLASS_NAME,"js-enhanced-ecommerce-goods-price")[0].text
-        p_price = p_price.replace(',', '')
-        p_price = p_price.replace('￥', '')
-        p_price = p_price.replace('(税込)', '')
-        p_price = p_price.replace('円', '')
-        p_price = int(p_price)
-    except Exception as e:
-        print(f"Error while fetching product price: {e}")
-    print(f"Product Price: {p_price}")  # Log giá sản phẩm
+    # # Log giá sản phẩm
+    # try:
+    #     p_price = driver.find_elements(By.CLASS_NAME,"js-enhanced-ecommerce-goods-price")[0].text
+    #     p_price = p_price.replace(',', '')
+    #     p_price = p_price.replace('￥', '')
+    #     p_price = p_price.replace('(税込)', '')
+    #     p_price = p_price.replace('円', '')
+    #     p_price = int(p_price)
+    # except Exception as e:
+    #     print(f"Error while fetching product price: {e}")
+    # print(f"Product Price: {p_price}")  # Log giá sản phẩm
 
     # Log hình ảnh sản phẩm
     try:
-        elm_pic = driver.find_elements(By.CLASS_NAME,"ql-editor")[0].find_elements(By.TAG_NAME,"img")
+        elm_pic = driver.find_elements(By.CSS_SELECTOR,"#blog_content .ql-editor")[0].find_elements(By.TAG_NAME,"img")
         pic_url = ""
         for m in range(len(elm_pic)):
-            pic_url = pic_url + elm_pic[m].get_attribute("src") + "|"
+            pic_url = pic_url + elm_pic[m].get_attribute("data-src") + "|"
     except Exception as e:
         print(f"Error while fetching product images: {e}")
     print(f"Product Images: {pic_url}")  # Log đường dẫn hình ảnh sản phẩm
@@ -1810,135 +1875,6 @@ def get_det_27 (prd_url,r_nm):
                     tr_sh.Cells(r_nm, 11).Value = time.time()
                 except Exception as e:
                     print(f"Error while changing quantity to zero: {e}")
-
-#https://shop.the-ticken.com/
-def get_det_28 (prd_url,r_nm):
-
-    print(f"Accessing URL: {prd_url}")  # In ra URL
-
-    global driver
-    global tr_sh
-    global tim_sh
-    global RateYD
-    global rangYD
-    global NgrYD
-    driver.get(prd_url)   
-
-    time.sleep(3)
-    p_id = ""
-    p_name = ""
-    sel_not = ""
-    p_det = ""
-    p_price = ""
-    pic_url = ""
-    tex_yn = ""  # Gán giá trị mặc định cho tex_yn
-
-    # Log tên sản phẩm
-    try:
-        p_name = driver.find_elements(By.CLASS_NAME,"title")[0].text
-    except Exception as e:
-        print(f"Error while fetching product name: {e}")
-    print(f"Product Name: {p_name}")  # Log tên sản phẩm
-
-    # Log trạng thái sản phẩm
-    try:
-        tex_yn = driver.find_elements(By.CLASS_NAME,"p-link--button__txt")[0].text
-    except Exception as e:
-        print(f"Error while fetching stock status text: {e}")
-    print(f"Stock Status Text: {tex_yn}")  # Log trạng thái sản phẩm
-
-    if "ショッピングカートに入れる" in tex_yn:
-        sel_not = "in stock"
-        print("Status: in stock")  # Log trạng thái "in stock"
-    else:
-        sel_not = "out of stock"
-        print("Status: out of stock")  # Log trạng thái "out of stock"
-        
-    # Log chi tiết sản phẩm
-    try:
-        elm_det = driver.find_elements(By.CLASS_NAME,"p-table__content")[0].find_elements(By.TAG_NAME,"tr")
-        for n in range(len(elm_det)):
-            try:
-                p_det = p_det + elm_det[n].find_elements(By.TAG_NAME,"th")[0].text + " : " + elm_det[n].find_elements(By.TAG_NAME,"td")[0].text + "<br>"
-            except:
-                pass
-    except Exception as e:
-        print(f"Error while fetching product details: {e}")
-    print(f"Product Details: {p_det}")  # Log chi tiết sản phẩm
-        
-    # Log giá sản phẩm
-    try:
-        p_price = driver.find_elements(By.CLASS_NAME,"js-enhanced-ecommerce-goods-price")[0].text
-        p_price = p_price.replace(',', '')
-        p_price = p_price.replace('￥', '')
-        p_price = p_price.replace('(税込)', '')
-        p_price = p_price.replace('円', '')
-        p_price = int(p_price)
-    except Exception as e:
-        print(f"Error while fetching product price: {e}")
-    print(f"Product Price: {p_price}")  # Log giá sản phẩm
-
-    # Log hình ảnh sản phẩm
-    try:
-        elm_pic = driver.find_elements(By.CLASS_NAME,"ql-editor")[0].find_elements(By.TAG_NAME,"img")
-        pic_url = ""
-        for m in range(len(elm_pic)):
-            pic_url = pic_url + elm_pic[m].get_attribute("src") + "|"
-    except Exception as e:
-        print(f"Error while fetching product images: {e}")
-    print(f"Product Images: {pic_url}")  # Log đường dẫn hình ảnh sản phẩm
-
-    if p_name == "":
-        sel_not = "out of stock"
-
-    if p_name != "":
-        tr_sh.Cells(r_nm, 4).Value = p_name
-    tr_sh.Cells(r_nm, 5).Value = sel_not
-    if p_det != "":
-        tr_sh.Cells(r_nm, 6).Value = p_det
-    if p_price != "":
-        tr_sh.Cells(r_nm, 7).Value = p_price
-    if pic_url != "":
-        tr_sh.Cells(r_nm, 8).Value = pic_url
-
-    if tr_sh.Cells(r_nm, 3).Value is not None:
-        if sel_not == "in stock":
-            # if abs(float(tr_sh.Cells(r_nm, 9).Value) - float(NgrYD)) > rangYD:
-            #     try:
-            #         ChngPrice(int(tr_sh.Cells(r_nm, 3).Value), int(tr_sh.Cells(r_nm, 16).Value))  # 価格変更
-            #         tr_sh.Cells(r_nm, 9).Value = NgrYD  # 価格変更時為替レート記入
-            #     except Exception as e:
-            #         print(f"Error while changing price: {e}")
-
-            if tr_sh.Cells(r_nm, 11).Value is not None:  # 販売停止中（timestumpが存在）
-                try:
-                    ChngQuantity(tr_sh.Cells(r_nm, 3).Value, 1)
-                    tr_sh.Cells(r_nm, 11).Value = ""
-                except Exception as e:
-                    print(f"Error while changing quantity: {e}")
-
-        elif sel_not == "out of stock":
-            z_range = 0
-            try:
-                z_range = time.time() - tr_sh.Cells(r_nm, 11).Value
-            except Exception as e:
-                print(f"Error while calculating time range: {e}")
-
-            if tr_sh.Cells(r_nm, 11).Value is not None and zkt < z_range:  # 販売停止中で（timestumpが存在して）タイマー経過していれば
-                try:
-                    DlePrdct(tr_sh.Cells(r_nm, 3).Value)
-                    tr_sh.Cells(r_nm, 3).Value = ""
-                    tr_sh.Cells(r_nm, 11).Value = ""
-                except Exception as e:
-                    print(f"Error while deleting product: {e}")
-
-            elif tr_sh.Cells(r_nm, 11).Value is None:
-                try:
-                    ChngQuantity(tr_sh.Cells(r_nm, 3).Value, 0)
-                    tr_sh.Cells(r_nm, 11).Value = time.time()
-                except Exception as e:
-                    print(f"Error while changing quantity to zero: {e}")
-
 
 def get_table_and_go():
     global tim_sh
@@ -1961,6 +1897,7 @@ def get_table_and_go():
     zkt= zkt*86400
     global tr_sh
 
+   
 
     # tr_sh= xl.Worksheets("the-ticken")###
     # for i in range(10000):
@@ -1970,6 +1907,14 @@ def get_table_and_go():
     #         get_det_28(tr_sh.Cells(i+3,2).Value,i+3)
     #     else:
     #         break 
+    tr_sh= xl.Worksheets("yafuoku")###
+    for i in range(10000):
+        #print(i)
+        if tr_sh.Cells(i+3,2).Value!=None:
+            
+            get_det_15(tr_sh.Cells(i+3,2).Value,i+3)    
+        else:
+            break
 
     tr_sh= xl.Worksheets("treasure-f")###
     for i in range(10000):
@@ -1998,6 +1943,7 @@ def get_table_and_go():
             get_det_25(tr_sh.Cells(i+3,2).Value,i+3)
         else:
             break 
+    
     
     
     tr_sh= xl.Worksheets("the gold")###
@@ -2061,14 +2007,7 @@ def get_table_and_go():
         else:
             break
     
-    tr_sh= xl.Worksheets("yafuoku")###
-    for i in range(10000):
-        #print(i)
-        if tr_sh.Cells(i+3,2).Value!=None:
-            
-            get_det_15(tr_sh.Cells(i+3,2).Value,i+3)
-        else:
-            break
+    
     
     tr_sh= xl.Worksheets("firekids")###                                        
     for i in range(10000):
