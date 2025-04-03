@@ -42,13 +42,25 @@ import requests
 import win32com.client
 
 import logging
+from logging.handlers import RotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
 
-logging.basicConfig(
-    filename='app.log', 
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+
+log_file = "app.log"
+
+# Cấu hình logging, xóa file log mỗi ngày và giữ lại tối đa 3 bản sao
+handler = TimedRotatingFileHandler(log_file, when="midnight", interval=2, backupCount=2, encoding='utf-8')
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+# Thiết lập logger
+logger = logging.getLogger("MyLogger")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+logging.basicConfig(level=logging.DEBUG, handlers=[handler])
+
+# Ví dụ log
+logger.info("Start process")  # Đây là dòng log bạn muốn ghi
 
 xl = win32com.client.GetObject(Class="Excel.Application")
 #driver.quit()
@@ -220,7 +232,7 @@ def get_det_1(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -328,7 +340,7 @@ def get_det_3(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -439,7 +451,7 @@ def get_det_5(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -548,7 +560,7 @@ def get_det_7(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -560,7 +572,6 @@ def get_det_7(prd_url,r_nm):
                 except:
                     pass
     
-
 
 def get_det_9(prd_url,r_nm):
     global driver
@@ -666,7 +677,7 @@ def get_det_9(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -781,7 +792,7 @@ def get_det_11(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -823,17 +834,19 @@ def get_det_15(prd_url,r_nm):
     closedHeader="#closedHeader"
     # Kiểm tra URL hiện tại
     current_url = driver.current_url
+
+    p_name_elm=driver.find_elements(By.CSS_SELECTOR,title_sec)
     
     # Kiểm tra xem URL có chứa 'page.auctions.yahoo.co.jp' hay không
-    if "page.auctions.yahoo.co.jp" in current_url:
+    if p_name_elm:
         print("Đang ở trên trang với 'page.auctions.yahoo.co.jp'")
     elif "auctions.yahoo.co.jp" in current_url:
         print("Đang ở trên trang với 'auctions.yahoo.co.jp'")
         title_sec = "#itemTitle > div > div > h1"
         quantity_sec="#itemStatus > div > ul > li:nth-child(1) > div > a"
         content_classname = "#description > section > div"
-        price_classname= "fHKtMh"
-        price_tax_classname = "fHKtMh"
+        price_classname= "kxUAXU"
+        price_tax_classname = "kxUAXU"
         ProductImage__thumbnail="#imageGallery > div > div > div > div > div.sc-ce81b05b-8.jAVFTS.slick-dots > ul > li"
         ProductImage__inner="#imageGallery > div > div > div > div > div.slick-list > div > div.slick-slide.slick-active.slick-current > div > div"
         closedHeader="#closedNotice"
@@ -866,6 +879,7 @@ def get_det_15(prd_url,r_nm):
                 sel_not = "out of stock"
 
     except:
+        logging.exception("get status yafuoku" + driver.current_url)
         pass    
     
 
@@ -880,6 +894,7 @@ def get_det_15(prd_url,r_nm):
             #document.getElementsByClassName("ProductExplanation__commentArea")
             #p_det=driver.find_elements(By.CLASS_NAME,"ProductExplanation__commentArea")[0].get_attribute('innerHTML')
     except:
+        logging.exception("get p_det yafuoku" + driver.current_url)
         pass
     
     try:
@@ -895,18 +910,21 @@ def get_det_15(prd_url,r_nm):
                 except:
                     pass
     except:
+        logging.exception("get p_det2 yafuoku" + driver.current_url)
         pass
     
     try:
         if p_det=="":
             p_det=driver.find_elements(By.CSS_SELECTOR,content_classname)[0].get_attribute('innerHTML')
     except:
+        logging.exception("get p_det3 yafuoku" + driver.current_url)
         pass
     
 
     try:
         p_price=driver.find_elements(By.CLASS_NAME, price_classname)[0].text
     except:
+        logging.exception("get p_price yafuoku" + driver.current_url)
         pass
     #document.getElementsByClassName("Price__tax")
     
@@ -918,6 +936,7 @@ def get_det_15(prd_url,r_nm):
         p_price=p_price.replace('円', '')
         p_price=int(p_price)
     except:
+        logging.exception("get p_price #2 yafuoku" + driver.current_url)
         pass
     
     #document.getElementsByClassName("Price__tax")
@@ -931,6 +950,7 @@ def get_det_15(prd_url,r_nm):
             p_price=int(p_price)
             
         except:
+            logging.exception("get p_price #3 yafuoku" + driver.current_url)
             pass
     
     
@@ -950,7 +970,11 @@ def get_det_15(prd_url,r_nm):
            
 
     except:
+        logging.exception("get elm_pic #1 yafuoku" + driver.current_url)
+
         pass
+ 
+    logging.info(f"get item final data {p_price}" + driver.current_url)
 
     if p_name=="":
         sel_not="out of stock"
@@ -993,7 +1017,7 @@ def get_det_15(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -1114,7 +1138,7 @@ def get_det_21(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -1237,7 +1261,7 @@ def get_det_22(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -1366,7 +1390,7 @@ def get_det_23(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
@@ -1486,7 +1510,7 @@ def get_det_24(prd_url,r_nm):
                 #削除して商品IO削除、販売停止timestumpを削除
                 try:
                     DlePrdct(tr_sh.Cells(r_nm,3).Value)
-                    tr_sh.Cells(r_nm,3).Value =""
+                    # tr_sh.Cells(r_nm,3).Value =""
                     tr_sh.Cells(r_nm,11).Value =""
                 except:
                     pass
